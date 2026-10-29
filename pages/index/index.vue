@@ -1,5 +1,5 @@
 <template>
-	<view class="content">
+	<view >
 		首页
 	</view>
 </template>
@@ -8,7 +8,7 @@
 	export default {
 		data() {
 			return {
-				title: 'Hello'
+
 			}
 		},
 		onLoad() {

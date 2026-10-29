@@ -1,6 +1,6 @@
 <template>
 	<view>
-		精选
+		服务
 	</view>
 </template>
 
