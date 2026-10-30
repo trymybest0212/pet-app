@@ -24,6 +24,7 @@
 
 <script setup lang="ts">
 	import { IMerchantItem } from '../type';
+
 	const props = defineProps<{merchanList: IMerchantItem[]}>()
 
 </script>
