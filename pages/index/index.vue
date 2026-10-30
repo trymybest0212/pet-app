@@ -1,22 +1,10 @@
 <template>
 	<view class="index-container">
-		<view class="header" :style="headerStyle">
-			<view class="status-bar"></view>
-			<view class="nav-content" :style="navStyle">
-				<view class="location" @click="handleLocation">
-					<uni-icons type="location" size="28" color="#fff"></uni-icons>
-					<text class="city">{{cityName}}</text>
-				</view>
-				<view class="search-box">
-					<uni-search-bar radius="100" placeholder="搜索宠物服务" clear-button="none" cancel-button="none"
-						style="width: 100%"></uni-search-bar>
-				</view>
-			</view>
-		</view>
+		<Header :menu-button-info="menuButtonInfo" :city-name="cityName" @getLocation="getLocation"></Header>
 		<view class="content">
-			<swiper class="banner-list">
-				<swiper-item v-for="item in bannerList" :key="item.title" indicator-dots autoplay circular
-					indicator-color="rgb(255,255,255,0.6)" indicator-active-color="#fff">
+			<swiper class="banner-list" :indicator-dots="true" autoplay circular indicator-color="rgb(255,255,255,0.6)"
+				indicator-active-color="#fff">
+				<swiper-item v-for="item in bannerList" :key="item.title">
 					<view class="swiper-item-content">
 						<image :src="item.url" mode="aspectFill"></image>
 					</view>
@@ -44,8 +32,6 @@
 						</template>
 					</up-box>
 				</view>
-
-
 			</view>
 			<view class="exchange-section">
 				<view class="section-title-area">
@@ -62,9 +48,9 @@
 					</view>
 				</view>
 			</view>
-
+			<StoreList :merchan-list="merchanList"></StoreList>
 		</view>
-</view>
+	</view>
 </template>
 
 
@@ -75,16 +61,21 @@
 	} from "vue"
 	import {
 		onLoad,
+		onReachBottom
 
 	} from "@dcloudio/uni-app"
 	import reverseCode from '../../utils/geocode'
 	import {
-		imageItem
+		imageItem,
+		IMerchantItem
 	} from './type'
 	import {
 		get
 	} from '../../http/index.js'
+	import Header from './components/header.vue'
+	import StoreList from './components/store-list.vue'
 	const menuButtonInfo = ref(null)
+	const cityName = ref('')
 	onLoad(() => {
 		// #ifdef MP-WEIXIN
 		menuButtonInfo.value = uni.getMenuButtonBoundingClientRect()
@@ -99,56 +90,9 @@
 		getLocation();
 		getBannerList();
 		getPartList();
+		getMerchanList(1);
 	})
 
-	const headerStyle = computed(() => {
-		let style = {
-			height: '200px'
-		}
-		// #ifdef MP-WEIXIN
-		if (menuButtonInfo.value) {
-			style = {
-				height: `${menuButtonInfo.value.height + menuButtonInfo.value.top + 20}px  `
-			}
-		}
-
-		// #endif
-		// #ifdef H5 || APP-PLUS
-		style = {
-			height: '90px'
-		}
-		// #endif
-		return style
-
-	})
-
-	const navStyle = computed(() => {
-		let style = {
-			height: '44px',
-			top: '0px'
-		}
-		// #ifdef MP-WEIXIN
-		if (menuButtonInfo.value) {
-			style = {
-				height: menuButtonInfo.value.height + 'px',
-				top: menuButtonInfo.value.top + 'px'
-			}
-		}
-		// #endif
-		// #ifdef H5 || APP-PLUS
-		style = {
-			top: "20px",
-			height: "50px"
-		}
-		// #endif
-		return style
-	})
-
-	const cityName = ref('')
-
-	const handleLocation = () => {
-		getLocation()
-	}
 	const getLocation = () => {
 		uni.getLocation({
 			type: "wgs84",
@@ -227,6 +171,7 @@
 			console.log(error)
 		}
 	}
+
 	const exchangeCards = ref([
 		{
 			imgUrl: '/static/modules/home/pic4.jpg',
@@ -236,51 +181,37 @@
 		{
 			imgUrl: '/static/modules/home/pic5.jpg',
 			title: '领券中心',
-			desc: '">618立减'
+			desc: '618立减'
 		}
 	])
+
+	const merchanList = ref<IMerchantItem[]>([])
+	const currentPage = ref<number>(1)
+	const totalPages = ref<number>(0)
+	const getMerchanList = async (page : number) => {
+		try {
+			const { list, pagination } : any = await get("/home/merchants", { page }) as any;
+			if (page === 1) {
+				merchanList.value = list
+			} else {
+				merchanList.value = [...merchanList.value, ...list]
+			}
+			totalPages.value = pagination.totalPages
+			currentPage.value = pagination.current
+		} catch (error) {
+			console.error("获取失败")
+		}
+	}
+	onReachBottom(()=>{
+		if(currentPage.value<totalPages.value){
+			getMerchanList(currentPage.value+1)
+		}
+	})
 </script>
 
 <style lang="scss">
 	.index-container {
 		background-color: #f7f7f7;
-
-		.header {
-			background-color: $uni-color-primary;
-
-			.status-bar {
-				width: 100%;
-				height: var(--status-bar-height);
-			}
-
-			.nav-content {
-				display: flex;
-				align-items: center;
-				padding: 0 30rpx;
-				position: fixed;
-				left: 0;
-				right: 0;
-
-				.location {
-					display: flex;
-					align-items: center;
-					margin-right: 10rpx;
-
-					.city {
-						color: #fff;
-						font-size: 28rpx;
-						width: 120rpx;
-						white-space: nowrap;
-						overflow: hidden;
-						text-overflow: ellipsis;
-					}
-				}
-
-				.search-box {
-					width: 360rpx;
-				}
-			}
-		}
 
 		.content {
 			padding: 0 10rpx;
@@ -329,34 +260,40 @@
 						text-overflow: ellipsis;
 					}
 				}
-				.box-image{
+
+				.box-image {
 					width: 100%;
 					height: 100%;
 					border-radius: 16rpx;
 				}
 
 			}
-			.exchange-section{
+
+			.exchange-section {
 				background-color: #fff;
 				border-radius: 16rpx;
 				padding: 30rpx;
 				margin-bottom: 24rpx;
-				.section-title-area{
+
+				.section-title-area {
 					display: flex;
 					align-items: center;
 					margin-bottom: 24rpx;
-					.section-title{
+
+					.section-title {
 						font-size: 32rpx;
 						font-weight: bold;
 						color: #000;
 						margin-right: 16rpx;
 					}
-					.section-subtitle{
+
+					.section-subtitle {
 						font-size: 24rpx;
-						color:$uni-text-color-grey ;
-						flex:1
+						color: $uni-text-color-grey ;
+						flex: 1
 					}
-					.go-btn{
+
+					.go-btn {
 						background-color: #ff6b81;
 						border-radius: 22rpx;
 						font-size: 24rpx;
@@ -364,37 +301,43 @@
 						padding: 4rpx 20rpx;
 					}
 				}
-				.promo-cards{
+
+				.promo-cards {
 					display: flex;
 					justify-content: space-between;
-					.promo-card{
+
+					.promo-card {
 						width: 330rpx;
 						background-color: #f9f9f9;
-						border-radius:16rpx;
+						border-radius: 16rpx;
 						padding: 20rpx;
 						position: relative;
-						.img-placeholder{
+
+						.img-placeholder {
 							width: 100%;
 							height: 160rpx;
 							border-radius: 8rpx;
 							margin-bottom: 16px;
 						}
-						.promo-title{
+
+						.promo-title {
 							font-size: 28rpx;
 							color: $uni-text-color;
 							line-height: 40rpx;
 							display: block;
 						}
-						.promo-desc{
+
+						.promo-desc {
 							font-size: 24rpx;
 							color: #999;
 							line-height: 34rpx;
 							display: block;
 						}
-						.samll-go{
+
+						.samll-go {
 							position: absolute;
 							right: 20rpx;
-							bottom:20rpx;
+							bottom: 20rpx;
 							background-color: #ff6b81;
 							border-radius: 16rpx;
 							font-size: 20rpx;
