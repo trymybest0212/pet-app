@@ -51,9 +51,16 @@
     /* 小程序特有相关 */
     "mp-weixin" : {
         "appid" : "wx7743de2fda418497",
+		 "mergeVirtualHostAttributes" : true,
         "setting" : {
             "urlCheck" : false
         },
+		"permission" : {
+		    "scope.userLocation" : {
+		        "desc" : "您的位置信息将用于展示附近服务"
+		    }
+		},
+		"requiredPrivateInfos" : [ "getLocation" ],
         "usingComponents" : true
     },
     "mp-alipay" : {
