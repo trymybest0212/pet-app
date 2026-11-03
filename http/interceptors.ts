@@ -15,11 +15,17 @@ export const requestInterceptor = (config : RequestConfig) => {
 
 }
 export const transformResponse = (res : any) => {
+
 	if (res.statusCode !== 200) {
 		uni.showToast({
 			title: res.data.message,
 			icon: "none"
 		})
+		// if (res.statusCode === 401) {
+		// 	uni.navigateTo({
+		// 		url: "/pages/login/login"
+		// 	})
+		// }
 		return
 	}
 	if (!res.data.success) {

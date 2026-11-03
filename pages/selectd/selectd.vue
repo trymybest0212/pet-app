@@ -17,9 +17,9 @@
 					</view>
 				</scroll-view>
 			</view>
-			<ShopList :title="shopTitle" :products="products"></ShopList>
+			<ShopList :title="shopTitle" :products="products" @close="handleClose"></ShopList>
 		</view>
-		<view class="float-cart">
+		<view class="float-cart" @click="goCart">
 			<up-icon name="shopping-cart" color="#ffce2c" size="80rpx"></up-icon>
 			<view class="cart-badge" v-if="cartCount>0">{{cartCount}}</view>
 		</view>
@@ -34,7 +34,8 @@
 	} from '../../http/index.js'
 	import {
 		onLoad,
-		onReachBottom
+		onReachBottom,
+		onShow
 
 	} from "@dcloudio/uni-app"
 
@@ -43,6 +44,7 @@
 	onLoad(() => {
 		getCategories()
 	})
+
 	const shopTitle = computed(() => {
 
 		return categories.value?.[currentIndex.value]?.category_name || '暂无数据'
@@ -88,6 +90,38 @@
 	}
 
 	const cartCount = ref(0)
+	const goCart = () => {
+		//判断用户是否登录，如果未登录，应跳转到登录页
+		const token = uni.getStorageSync("token");
+		if (!token) {
+			uni.navigateTo({
+				url: "/pages/login/login"
+			})
+			return
+		}
+		uni.navigateTo({
+			url: "/pages/cart/cart"
+		})
+	}
+	onShow(() => {
+		const token = uni.getStorageSync("token");
+		if (token) {
+			getCartCount()
+		}
+
+
+	})
+	const getCartCount = async () => {
+		try {
+			const data : any = await get("/cart/list")
+			cartCount.value = data.length
+		} catch (error) {
+			//TODO handle the exception
+		}
+	}
+	const handleClose = () => {
+		getCartCount()
+	}
 </script>
 
 <style lang="scss" scoped>

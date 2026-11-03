@@ -10,24 +10,39 @@
 					<view class="price-row">
 						<text class="product-price">￥{{item.price}}</text>
 
-						<view class="add-cart">
+						<view class="add-cart" @click="addCart(item)">
 							<up-icon name="shopping-cart" color="#fff" size="18"></up-icon>
 						</view>
 					</view>
 				</view>
 			</view>
 		</view>
+		<ProductSpec :show="isShow" :product="selectProduct" @close="handleClose"></ProductSpec>
 	</scroll-view>
 </template>
 
 <script lang="ts" setup>
+	import { ref } from 'vue'
 	import { IProductItem } from '../type';
+	import ProductSpec from '../../../components/product-spec/product-spec.vue'
 	interface IProps {
 		title : string,
 		products : IProductItem[]
 	}
 
 	const props = defineProps<IProps>()
+	const emit = defineEmits(['close'])
+	const selectProduct = ref(null)
+	const isShow = ref(false)
+	const addCart = (obj : IProductItem) => {
+		selectProduct.value = obj
+		console.log(obj)
+		isShow.value = true
+	}
+	const handleClose = () => {
+		isShow.value = false;
+		emit('close')
+	}
 </script>
 
 <style lang="scss" scoped>
@@ -78,7 +93,7 @@
 
 					.price-row {
 						display: flex;
-						justify-content: space-around;
+						justify-content: space-between;
 						align-items: center;
 
 						.product-price {
