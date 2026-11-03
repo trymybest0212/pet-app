@@ -52,12 +52,13 @@
 	}
 	interface IProps {
 		show : boolean,
-		product : IProductItem
+		product : IProductItem,
+		showOk ?: boolean
 
 	}
 
 	const props = defineProps<IProps>()
-	const emit = defineEmits(['close'])
+	const emit = defineEmits(['close', 'confirm'])
 
 	watch(() => props.show, (val) => {
 		if (val) {
@@ -104,6 +105,7 @@
 		emit("close");
 		Object.keys(selectedSpecs).forEach(key => delete selectedSpecs[key]);
 		Object.keys(selectedTexts).forEach(key => delete selectedTexts[key]);
+		quantity.value = 1
 		selectedSpecText.value = ""
 	}
 	const quantity = ref<number>(1)
@@ -117,11 +119,10 @@
 	}
 	const finalPrice = computed(() => {
 		//find return一个条件，返回符合条件的这个数据
-		let price : number = Number(props.product.price)
+		let price : number = Number(props.product?.price)
 		if (specList.value.length) { //数组有数据再循环
 			specList.value.forEach(group => {
 				const selected = group.values.find(item => selectedSpecs[group.attr_id] === item.value_id);
-				console.log("选中的数据", selected)
 				if (selected?.multiple) {
 					price *= Number(selected.multiple)
 				}
@@ -143,13 +144,17 @@
 				title: "加购成功",
 				icon: "success"
 			})
-			// specStore.setSpec("")
-			// specStore.setCount(1)
+			emit('confirm', {})
 			handleClose()
 		} catch (error) {
 			//TODO handle the exception
 			console.error(error)
 		}
+	}
+	const handleOk = () => {
+		emit('confirm', { selectedSpecText:selectedSpecText.value, quantity:quantity.value })
+		handleClose()
+
 	}
 </script>
 

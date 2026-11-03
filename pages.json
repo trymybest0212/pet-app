@@ -36,13 +36,28 @@
 				"navigationBarTitleText": "登录"
 			}
 		}
+
 	],
+	"subPackages": [{
+		"root": "packageA",
+		"pages": [{
+			"path": "product-detail/product-detail",
+			"style": {
+				"navigationBarTitleText": "商品详情"
+			}
+		}]
+	}],
+	"preloadRule": {
+		"pages/selectd/selectd": {
+			"network": "wifi",
+			"packages": ["packageA"]
+		}
+	},
 	"tabBar": {
 		"color": "#999999",
 		"selectedColor": "#ffce2c",
 		"backgroundColor": "#fff",
-		"list": [
-			{
+		"list": [{
 				"text": "首页",
 				"iconPath": "/static/common/images/home.png",
 				"selectedIconPath": "/static/common/images/home-active.png",

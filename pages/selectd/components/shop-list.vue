@@ -43,6 +43,11 @@
 		isShow.value = false;
 		emit('close')
 	}
+	const goProductDetail = (item : IProductItem) => {
+		uni.navigateTo({
+			url: `/packageA/product-detail/product-detail?product=${JSON.stringify(item)}`
+		})
+	}
 </script>
 
 <style lang="scss" scoped>
