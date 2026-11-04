@@ -35,8 +35,7 @@
 			"style": {
 				"navigationBarTitleText": "登录"
 			}
-		}
-
+		},
 	],
 	"subPackages": [{
 		"root": "packageA",
@@ -44,6 +43,15 @@
 			"path": "product-detail/product-detail",
 			"style": {
 				"navigationBarTitleText": "商品详情"
+			}
+		}]
+	},
+	{
+		"root": "packageB",
+		"pages": [{
+			"path": "address/address",
+			"style": {
+				"navigationBarTitleText": "地址管理"
 			}
 		}]
 	}],
