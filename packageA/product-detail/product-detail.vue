@@ -109,6 +109,24 @@
 			showSpecPopup()
 		}
 	}
+	const buyNow=()=>{
+		if(specInfo.value?.quantity){
+			let selPro=[{
+				count:specInfo.value?.quantity,
+				main_pic:productInfo.value.main_pic,
+				name:productInfo.value.name,
+				price:specInfo.value.price,
+				product_id:productInfo.value.id,
+				spec:specInfo.value.selectedSpecText
+			}]
+			uni.navigateTo({
+
+				url:"/packageB/order/order?selPro="+JSON.stringify(selPro)
+			})
+		}else{
+			showSpecPopup()
+		}
+	}
 	const goHome = () => {
 		uni.switchTab({
 			url: "/pages/index/index"

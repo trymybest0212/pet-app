@@ -51,13 +51,13 @@
 		detail: "",
 		is_default: 0
 	})
-	watch(()=>props.isShow,()=>{
-		if(props.isShow && isEdit.value) {
+	watch(() => props.isShow, () => {
+		if (props.isShow && isEdit.value) {
 			Object.keys(formData.value).forEach((item) => {
-				if(item === 'region') {
-				const addressStr =	props.address.province + props.address.city + props.address.district
-				 formData.value.region = addressStr.split(',')
-				}else {
+				if (item === 'region') {
+					const addressStr = props.address.province + ',' + props.address.city + ',' + props.address.district
+					formData.value.region = addressStr.split(',')
+				} else {
 					formData.value[item] = props.address[item]
 				}
 
@@ -137,6 +137,7 @@
 				detail: data.detail,
 				is_default: data.is_default
 			}
+			console.log(newAddress, 'newAddress')
 			try {
 				await post("/cart/addOrUpdate", newAddress);
 				uni.showToast({

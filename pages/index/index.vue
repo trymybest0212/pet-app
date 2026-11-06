@@ -12,7 +12,8 @@
 			</swiper>
 			<view class="part-list">
 				<up-scroll-list indicatorColor="#fff0f0" indicatorActiveColor="#ffce2c">
-					<view class="part-item" v-for="item in partList" :key="item.title">
+					<view class="part-item" v-for="item in partList" :key="item.title"
+						@click="jumpToMerchant(item.title)">
 						<image class="part-image" :src="item.url" mode="aspectFill"></image>
 						<text class="part-title">{{item.title}}</text>
 					</view>
@@ -171,6 +172,11 @@
 			console.log(error)
 		}
 	}
+	const jumpToMerchant = (title : string) => {
+		uni.navigateTo({
+			url: "/packageB/merchant/merchant?keyword=" + title
+		})
+	}
 
 	const exchangeCards = ref([
 		{
@@ -202,9 +208,9 @@
 			console.error("获取失败")
 		}
 	}
-	onReachBottom(()=>{
-		if(currentPage.value<totalPages.value){
-			getMerchanList(currentPage.value+1)
+	onReachBottom(() => {
+		if (currentPage.value < totalPages.value) {
+			getMerchanList(currentPage.value + 1)
 		}
 	})
 </script>

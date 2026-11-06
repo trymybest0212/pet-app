@@ -1,6 +1,6 @@
 <template>
 	<view class="store-list">
-		<view class="store-item" v-for="item in merchanList" :key="item.merchant_id">
+		<view class="store-item" v-for="item in merchanList" :key="item.merchant_id" @click="goToDetail(item)">
 			<image class="store-img" mode="aspectFill" :src="item.pic"></image>
 			<view class="store-info">
 				<text class="store-name">{{item.merchant_name}}</text>
@@ -25,19 +25,26 @@
 <script setup lang="ts">
 	import { IMerchantItem } from '../type';
 
-	const props = defineProps<{merchanList: IMerchantItem[]}>()
+	const props = defineProps<{ merchanList : IMerchantItem[] }>()
+	const goToDetail = (item : IMerchantItem) => {
+		uni.navigateTo({
+			url:`/packageB/merchant-detail/merchant-detail?info=${JSON.stringify(item)}`
+		})
 
+	}
 </script>
 
 <style lang="scss">
 	.store-list {
 		background-color: #fff;
+
 		.store-item {
 			display: flex;
 			background-color: #fff;
 			border-radius: 16rpx;
 			margin: 10rpx 0 10rpx 0;
 			padding: 20rpx;
+
 			.store-img {
 				width: 160rpx;
 				height: 160rpx;

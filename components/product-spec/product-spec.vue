@@ -152,7 +152,7 @@
 		}
 	}
 	const handleOk = () => {
-		emit('confirm', { selectedSpecText:selectedSpecText.value, quantity:quantity.value })
+		emit('confirm', { selectedSpecText:selectedSpecText.value, quantity:quantity.value,price: finalPrice.value, })
 		handleClose()
 
 	}

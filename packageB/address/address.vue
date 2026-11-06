@@ -54,8 +54,10 @@
 		IAddressForm
 	} from './type'
 	import AddressForm from './components/addess-form.vue'
+	const flag = ref()
 	onLoad((options) => {
 		getAddressList()
+		flag.value = options.flag
 	})
 	const handleClose = () => {
 		isShow.value = false
@@ -71,7 +73,7 @@
 		}
 	}
 	const isShow = ref(false)
-	const address = ref({} )
+	const address = ref({})
 	const editAddress = (item : any) => {
 		isShow.value = true
 		address.value = item
@@ -104,6 +106,12 @@
 	}
 	const handleUpdateList = () => {
 		getAddressList()
+	}
+	const selectAddress = (item : IAddressItem) => {
+		if (flag.value) {
+			uni.$emit("addressSelected", item) //触发由 uni.$on监听的全局自定义事件
+			uni.navigateBack()
+		}
 	}
 </script>
 

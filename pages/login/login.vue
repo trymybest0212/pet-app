@@ -24,7 +24,7 @@
 				</view>
 			</view>
 			<!--h5 app-->
-			<!-- 	<view v-else class="login-content">
+				<view v-else class="login-content">
 				<view class="phone-login">
 					<text class="login-title">手机号登录</text>
 					<text class="login-desc">请输入手机号和验证码</text>
@@ -48,7 +48,7 @@
 						}" @click="handleLogin">登录</up-button>
 					</view>
 				</view>
-			</view> -->
+			</view>
 		</view>
 	</view>
 </template>
@@ -115,6 +115,68 @@
 			uni.navigateBack();
 		}, 500)
 
+	}
+	const phone = ref();
+	const code  = ref('')
+	const countDown=ref<number>(60);
+	const isCounting=ref<boolean>(false)
+	const sendCode=async ()=>{
+		try {
+			const data:any=await post("/auth/sendSmsCode",{phone:phone.value});
+			console.log("验证码已发送",data)
+		} catch (error) {
+			console.log("验证码发送失败")
+		}
+	}
+	const getCode=()=>{
+		if(isCounting.value) return;
+		//判断手机号格式
+		const phoneReg=/^1[3-9]\d{9}$/;
+		if(!phoneReg.test(phone.value)){
+			uni.showToast({
+				title:"请输入正确的手机号",
+				icon:"none"
+			})
+			return
+		}
+		isCounting.value=true;
+		countDown.value=60;
+		const timer=setInterval(()=>{
+			countDown.value--
+			if(countDown.value<=0){
+				clearInterval(timer);
+				isCounting.value=false;
+			}
+		},1000)
+		//发送验证码
+		sendCode()
+	}
+	const handleLogin=async ()=>{
+		const phoneReg=/^1[3-9]\d{9}$/;
+		if(phoneReg.test(phone.value)&&code.value){
+			try {
+				const data:any=await post("/auth/verifySmsCode",{phone:phone.value,code:code.value});
+				console.log("登录结果",data)
+				uni.setStorageSync("token",data.token)
+				uni.setStorageSync("user",data.user)
+				uni.showToast({
+					title:"登陆成功",
+					icon:"success",
+					duration:1500
+				})
+				setTimeout(()=>{
+					uni.navigateBack();
+				},500)
+			} catch (error) {
+				console.log("登录失败")
+			}
+		}else{
+			uni.showToast({
+				title:"请输入正确的信息",
+				icon:"none"
+			})
+
+		}
 	}
 </script>
 
